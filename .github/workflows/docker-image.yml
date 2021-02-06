@@ -13,13 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: FranzDiebold/github-env-vars-action@v2
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build and Push Docker image
       run: |
-        docker build . --file Dockerfile --tag renehr9102/act-environment:$(date +%s)
-        docker tag renehr9102/act-environment:$(date +%s) renehr9102/act-environment:latest
+        docker build . --file Dockerfile --tag renehr9102/act-environment:$CI_SHA_SHORT
+        docker tag renehr9102/act-environment:$CI_SHA_SHORT renehr9102/act-environment:latest
     - name: Push Docker image
       run: |
         docker login --username ${{secrets.DOCKERHUB_USERNAME}} --password ${{secrets.DOCKERHUB_PASSWORD}}
-        docker push renehr9102/act-environment:$(date +%s)
+        docker push renehr9102/act-environment:$CI_SHA_SHORT
         docker push renehr9102/act-environment:latest
