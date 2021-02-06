@@ -1,0 +1,25 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile --tag renehr9102/act-environment:$(date +%s)
+        docker tag renehr9102/act-environment:$(date +%s) renehr9102/act-environment:latest
+    - name: Push Docker image
+      run: |
+        docker login --username ${{secrets.DOCKERHUB_USERNAME}} --password ${{secrets.DOCKERHUB_PASSWORD}}
+        docker push renehr9102/act-environment:$(date +%s)
+        docker push renehr9102/act-environment:latest
